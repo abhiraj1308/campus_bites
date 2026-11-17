@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Bites - Student Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">🍔 Campus Bites</span>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <div class="card shadow-sm p-4 col-lg-8 offset-lg-2">
+            <h2 class="text-center mb-3 text-primary fw-bold">Campus Canteen Pre-Order</h2>
+            <p class="text-center text-muted mb-4">Select your food across cuisine counters and pick your pickup slot.</p>
+            
+            <form action="/place_order" method="POST">
+                
+                <!-- Student Details Section -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Student Name:</label>
+                        <input type="text" name="student_name" class="form-control" placeholder="e.g. Abhiraj Adhya" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Roll Number:</label>
+                        <input type="text" name="roll_number" class="form-control" placeholder="e.g. 1262300..." required>
+                    </div>
+                </div>
+
+                <!-- Pickup Time Slot -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Pickup Time Slot:</label>
+                    <select name="pickup_slot" class="form-select" required>
+                        <option value="" disabled selected>Choose a pickup time slot...</option>
+                        <option value="1:00 PM - 1:15 PM">1:00 PM - 1:15 PM</option>
+                        <option value="1:15 PM - 1:30 PM">1:15 PM - 1:30 PM</option>
+                        <option value="1:30 PM - 1:45 PM">1:30 PM - 1:45 PM</option>
+                        <option value="1:45 PM - 2:00 PM">1:45 PM - 2:00 PM</option>
+                    </select>
+                </div>
+
+                <!-- Multi-Cuisine Menu Sections -->
+                <h4 class="mt-4 mb-3 border-bottom pb-2 fw-bold text-dark">Menu Items by Cuisine</h4>
+                
+                {% for cuisine, items in grouped_menu.items() %}
+                <div class="card mb-3 p-3 bg-white border border-secondary-subtle">
+                    <h5 class="text-success fw-bold border-bottom pb-2">
+                        🍽️ {{ cuisine }} Counter
+                    </h5>
+                    {% for item in items %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div>
+                            <strong class="fs-6">{{ item.name }}</strong>
+                            <span class="text-muted d-block small">₹{{ "%.2f"|format(item.price) }}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label class="me-2 text-muted small">Qty:</label>
+                            <input type="number" name="quantity_{{ item.id }}" min="0" value="0" class="form-control text-center" style="width: 70px;">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <!-- Payment Method Options -->
+                <div class="card p-3 my-4 bg-light border-primary">
+                    <label class="form-label fw-bold text-primary">Payment Option:</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payCounter" value="Pay at Counter" checked>
+                        <label class="form-check-label fw-semibold" for="payCounter">
+                            💵 Pay at Counter <span class="text-muted fw-normal">(Pay Cash or UPI when collecting food)</span>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payQR" value="UPI QR Code">
+                        <label class="form-check-label fw-semibold" for="payQR">
+                            📱 Pay via UPI QR Code <span class="text-muted fw-normal">(Generates instant dynamic UPI QR code)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Place Canteen Order</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

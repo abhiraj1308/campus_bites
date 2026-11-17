@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard - Campus Bites</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container-fluid px-4">
+            <span class="navbar-brand mb-0 h1">👨‍🍳 Campus Bites - Kitchen Dashboard</span>
+            <a href="/" class="btn btn-outline-light btn-sm">Student View</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark">Live Kitchen Orders</h2>
+            <a href="/vendor/dashboard" class="btn btn-secondary btn-sm">🔄 Refresh Orders</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Student Info</th>
+                                <th>Ordered Items & Cuisine Counters</th>
+                                <th>Pickup Slot</th>
+                                <th>Payment Option</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold">#{{ order.id }}</td>
+                                <td>
+                                    <div class="fw-semibold">{{ order.student_name }}</div>
+                                    <small class="text-muted">{{ order.roll_number }}</small>
+                                </td>
+                                <td>
+                                    <ul class="list-unstyled mb-0">
+                                    {% for item in order.items %}
+                                        <li class="mb-1">
+                                            • <strong>{{ item.item.name }}</strong> (x{{ item.quantity }})
+                                            <span class="badge bg-secondary ms-1">{{ item.item.cuisine }}</span>
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                                <td>
+                                    <span class="badge bg-white border text-dark">{{ order.pickup_slot }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if order.payment_method == 'UPI QR Code' %}bg-primary{% else %}bg-dark{% endif %} mb-1">
+                                        {{ order.payment_method }}
+                                    </span>
+                                    <div class="fw-bold text-success">₹{{ "%.2f"|format(order.total_price) }}</div>
+                                </td>
+                                <td>
+                                    {% if order.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark fs-6">Pending</span>
+                                    {% elif order.status == 'Preparing' %}
+                                        <span class="badge bg-info text-dark fs-6">Preparing</span>
+                                    {% elif order.status == 'Ready' %}
+                                        <span class="badge bg-success fs-6">Ready</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6">{{ order.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form action="/vendor/update_status" method="POST" class="d-inline">
+                                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                                        <button type="submit" name="status" value="Preparing" class="btn btn-sm btn-info me-1">Preparing</button>
+                                        <button type="submit" name="status" value="Ready" class="btn btn-sm btn-success me-1">Ready</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not orders %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">No active orders placed yet.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
